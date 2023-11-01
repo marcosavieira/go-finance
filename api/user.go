@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/marcosavieira/go-finance/api/security"
 	db "github.com/marcosavieira/go-finance/db/sqlc"
 )
 
@@ -21,9 +22,17 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 	}
 
+	passwordHashedInBytes, err := security.Hash(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "Error hashing password")
+		return
+	}
+
+	passwordHashed := string(passwordHashedInBytes)
+
 	arg := db.CreateUserParams{
 		Username: req.Username,
-		Password: req.Password,
+		Password: passwordHashed,
 		Email:    req.Email,
 	}
 

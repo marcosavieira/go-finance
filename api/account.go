@@ -14,7 +14,7 @@ type createAccountRequest struct {
 	CategoryID  int32     `json:"category_id" binding:"required"`
 	Title       string    `json:"title" binding:"required"`
 	Type        string    `json:"type" binding:"required"`
-	Description string    `json:"description" binding:"required`
+	Description string    `json:"description" binding:"required"`
 	Value       int32     `json:"value" binding:"required"`
 	Date        time.Time `json:"date" binding:"required"`
 }
@@ -26,11 +26,27 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 	}
 
+	categoryId := req.CategoryID
+	accountType := req.Type
+
+	category, err := server.store.GetCategory(ctx, categoryId)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, errorResponse(err))
+		return
+	}
+
+	categoryTypeDifferent := category.Type != accountType
+
+	if categoryTypeDifferent {
+		ctx.JSON(http.StatusBadRequest, "Account type different of category type")
+		return
+	}
+
 	arg := db.CreateAccountParams{
 		UserID:      req.UserID,
-		CategoryID:  req.CategoryID,
+		CategoryID:  categoryId,
 		Title:       req.Title,
-		Type:        req.Type,
+		Type:        accountType,
 		Description: req.Description,
 		Value:       req.Value,
 		Date:        req.Date,
