@@ -20,7 +20,7 @@ INSERT INTO accounts (
     description,
     value, 
     date
-)VALUES (
+) VALUES (
     $1, $2, $3, $4, $5, $6, $7
 ) RETURNING id, user_id, category_id, title, type, description, value, date, created_at
 `
@@ -101,19 +101,34 @@ SELECT
     a.date,
     a.created_at,
     c.title AS category_title
-FROM accounts a LEFT JOIN 
-categories c ON c.id = a.category_id 
-WHERE a.user_id = $1 AND a.type = $2 AND a.category_id = $3 
-AND a.title LIKE $4 AND a.description LIKE $5 AND a.date = $6
+FROM 
+  accounts a 
+LEFT JOIN 
+  categories c ON c.id = a.category_id 
+WHERE 
+  a.user_id = $1 
+AND
+  a.type = $2
+AND
+  LOWER(a.title) LIKE CONCAT('%', LOWER($3::text), '%')    
+AND
+  LOWER(a.description) LIKE CONCAT('%', LOWER($4::text), '%')
+AND
+  a.category_id = COALESCE($5, a.category_id)
+AND
+  a.value = COALESCE($6, a.value)
+AND
+  a.date = COALESCE($7, a.date)
 `
 
 type GetAccountsParams struct {
-	UserID      int32     `json:"user_id"`
-	Type        string    `json:"type"`
-	CategoryID  int32     `json:"category_id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Date        time.Time `json:"date"`
+	UserID      int32         `json:"user_id"`
+	Type        string        `json:"type"`
+	Title       string        `json:"title"`
+	Description string        `json:"description"`
+	CategoryID  sql.NullInt32 `json:"category_id"`
+	Value       sql.NullInt32 `json:"value"`
+	Date        sql.NullTime  `json:"date"`
 }
 
 type GetAccountsRow struct {
@@ -132,9 +147,10 @@ func (q *Queries) GetAccounts(ctx context.Context, arg GetAccountsParams) ([]Get
 	rows, err := q.db.QueryContext(ctx, getAccounts,
 		arg.UserID,
 		arg.Type,
-		arg.CategoryID,
 		arg.Title,
 		arg.Description,
+		arg.CategoryID,
+		arg.Value,
 		arg.Date,
 	)
 	if err != nil {

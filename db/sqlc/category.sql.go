@@ -15,7 +15,7 @@ INSERT INTO categories (
     title,
     type,
     description
-)VALUES (
+) VALUES (
     $1, $2, $3, $4
 ) RETURNING id, user_id, title, type, description, created_at
 `
@@ -56,7 +56,15 @@ func (q *Queries) DeleteCategory(ctx context.Context, id int32) error {
 }
 
 const getCategories = `-- name: GetCategories :many
-SELECT id, user_id, title, type, description, created_at FROM categories WHERE user_id = $1 AND type = $2 AND title like $3 AND description like $4
+SELECT id, user_id, title, type, description, created_at FROM categories 
+WHERE 
+  user_id = $1 
+AND 
+  type = $2
+AND 
+  LOWER(title) LIKE CONCAT('%', LOWER($3::text), '%')
+AND 
+  LOWER(description) LIKE CONCAT('%', LOWER($4::text), '%')
 `
 
 type GetCategoriesParams struct {

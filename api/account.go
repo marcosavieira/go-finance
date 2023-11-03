@@ -138,6 +138,7 @@ func (server *Server) updateAccount(ctx *gin.Context) {
 type getAccountsRequest struct {
 	UserID      int32     `json:"user_id" binding:"required"`
 	CategoryID  int32     `json:"category_id"`
+	Value       int32     `json:"value" `
 	Title       string    `json:"title" `
 	Type        string    `json:"type" binding:"required"`
 	Description string    `json:"description" `
@@ -149,15 +150,26 @@ func (server *Server) getAccounts(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
 
 	arg := db.GetAccountsParams{
-		UserID:      req.UserID,
-		CategoryID:  req.CategoryID,
-		Type:        req.Type,
+		UserID: req.UserID,
+		Type:   req.Type,
+		CategoryID: sql.NullInt32{
+			Int32: req.CategoryID,
+			Valid: req.CategoryID > 0,
+		},
+		Value: sql.NullInt32{
+			Int32: req.Value,
+			Valid: req.Value > 0,
+		},
 		Title:       req.Title,
 		Description: req.Description,
-		Date:        req.Date,
+		Date: sql.NullTime{
+			Time:  req.Date,
+			Valid: !req.Date.IsZero(),
+		},
 	}
 
 	accounts, err := server.store.GetAccounts(ctx, arg)
