@@ -151,19 +151,60 @@ func (server *Server) getAccounts(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	arg := db.GetAccountsParams{
-		UserID:      req.UserID,
-		CategoryID:  req.CategoryID,
-		Type:        req.Type,
-		Title:       req.Title,
-		Description: req.Description,
-		Date:        req.Date,
+	var accounts interface{}
+	conditionDefault := req.UserID > 0 && len(req.Type) > 0
+	filterByUserIdAndType := req.CategoryID == 0 && len(req.Date.GoString()) == 0 && len(req.Title) == 0 && len(req.Description) == 0 && conditionDefault
+
+	if filterByUserIdAndType {
+		arg := db.GetAccountsByUserIdAndTypeParams{
+			UserID: req.UserID,
+			Type:   req.Type,
+		}
+
+		accountsByUserIdAndType, err := server.store.GetAccountsByUserIdAndType(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+
+		accounts = accountsByUserIdAndType
 	}
 
-	accounts, err := server.store.GetAccounts(ctx, arg)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
+	filterByUserIdAndTypeAndCategoryId := req.CategoryID != 0 && len(req.Date.GoString()) == 0 && len(req.Title) == 0 && len(req.Description) == 0 && conditionDefault
+
+	if filterByUserIdAndTypeAndCategoryId {
+		arg := db.GetAccountsByUserIdAndTypeAndCategoryIdParams{
+			UserID:     req.UserID,
+			Type:       req.Type,
+			CategoryID: req.CategoryID,
+		}
+
+		accountsByUserIdAndTypeAndCategoryId, err := server.store.GetAccountsByUserIdAndTypeAndCategoryId(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+
+		accounts = accountsByUserIdAndTypeAndCategoryId
+	}
+
+	filterByUserIdAndTypeAndCategoryIdAndTitle := req.CategoryID != 0 && len(req.Date.GoString()) == 0 && len(req.Title) != 0 && len(req.Description) == 0 && conditionDefault
+
+	if filterByUserIdAndTypeAndCategoryIdAndTitle {
+		arg := db.GetAccountsByUserIdAndTypeAndCategoryIdAndTitleParams{
+			UserID:     req.UserID,
+			Type:       req.Type,
+			CategoryID: req.CategoryID,
+			Title:      req.Title,
+		}
+
+		accountsByUserIdAndTypeAndCategoryIdAndTitle, err := server.store.GetAccountsByUserIdAndTypeAndCategoryIdAndTitle(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+
+		accounts = accountsByUserIdAndTypeAndCategoryIdAndTitle
 	}
 
 	ctx.JSON(http.StatusOK, accounts)
