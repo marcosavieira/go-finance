@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -88,12 +89,18 @@ func TestListAccounts(t *testing.T) {
 	lastAccount := createRandomAccount(t)
 
 	arg := GetAccountsParams{
-		UserID:      lastAccount.UserID,
-		CategoryID:  lastAccount.CategoryID,
-		Type:        lastAccount.Type,
+		UserID: lastAccount.UserID,
+		Type:   lastAccount.Type,
+		CategoryID: sql.NullInt32{
+			Int32: lastAccount.CategoryID,
+			Valid: lastAccount.CategoryID > 0,
+		},
 		Title:       lastAccount.Title,
 		Description: lastAccount.Description,
-		Date:        lastAccount.Date,
+		Date: sql.NullTime{
+			Time:  lastAccount.Date,
+			Valid: !lastAccount.Date.IsZero(),
+		},
 	}
 
 	accounts, err := testQueries.GetAccounts(context.Background(), arg)

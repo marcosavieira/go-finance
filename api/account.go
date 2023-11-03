@@ -138,6 +138,7 @@ func (server *Server) updateAccount(ctx *gin.Context) {
 type getAccountsRequest struct {
 	UserID      int32     `json:"user_id" binding:"required"`
 	CategoryID  int32     `json:"category_id"`
+	Value       int32     `json:"value" `
 	Title       string    `json:"title" `
 	Type        string    `json:"type" binding:"required"`
 	Description string    `json:"description" `
@@ -149,62 +150,32 @@ func (server *Server) getAccounts(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
 
-	var accounts interface{}
-	conditionDefault := req.UserID > 0 && len(req.Type) > 0
-	filterByUserIdAndType := req.CategoryID == 0 && len(req.Date.GoString()) == 0 && len(req.Title) == 0 && len(req.Description) == 0 && conditionDefault
-
-	if filterByUserIdAndType {
-		arg := db.GetAccountsByUserIdAndTypeParams{
-			UserID: req.UserID,
-			Type:   req.Type,
-		}
-
-		accountsByUserIdAndType, err := server.store.GetAccountsByUserIdAndType(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-
-		accounts = accountsByUserIdAndType
+	arg := db.GetAccountsParams{
+		UserID: req.UserID,
+		Type:   req.Type,
+		CategoryID: sql.NullInt32{
+			Int32: req.CategoryID,
+			Valid: req.CategoryID > 0,
+		},
+		Value: sql.NullInt32{
+			Int32: req.Value,
+			Valid: req.Value > 0,
+		},
+		Title:       req.Title,
+		Description: req.Description,
+		Date: sql.NullTime{
+			Time:  req.Date,
+			Valid: !req.Date.IsZero(),
+		},
 	}
 
-	filterByUserIdAndTypeAndCategoryId := req.CategoryID != 0 && len(req.Date.GoString()) == 0 && len(req.Title) == 0 && len(req.Description) == 0 && conditionDefault
-
-	if filterByUserIdAndTypeAndCategoryId {
-		arg := db.GetAccountsByUserIdAndTypeAndCategoryIdParams{
-			UserID:     req.UserID,
-			Type:       req.Type,
-			CategoryID: req.CategoryID,
-		}
-
-		accountsByUserIdAndTypeAndCategoryId, err := server.store.GetAccountsByUserIdAndTypeAndCategoryId(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-
-		accounts = accountsByUserIdAndTypeAndCategoryId
-	}
-
-	filterByUserIdAndTypeAndCategoryIdAndTitle := req.CategoryID != 0 && len(req.Date.GoString()) == 0 && len(req.Title) != 0 && len(req.Description) == 0 && conditionDefault
-
-	if filterByUserIdAndTypeAndCategoryIdAndTitle {
-		arg := db.GetAccountsByUserIdAndTypeAndCategoryIdAndTitleParams{
-			UserID:     req.UserID,
-			Type:       req.Type,
-			CategoryID: req.CategoryID,
-			Title:      req.Title,
-		}
-
-		accountsByUserIdAndTypeAndCategoryIdAndTitle, err := server.store.GetAccountsByUserIdAndTypeAndCategoryIdAndTitle(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-
-		accounts = accountsByUserIdAndTypeAndCategoryIdAndTitle
+	accounts, err := server.store.GetAccounts(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, accounts)
