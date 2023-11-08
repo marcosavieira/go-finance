@@ -15,6 +15,11 @@ type loginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type loginResponse struct {
+	UserID int32 `json:"user_id"`
+	Token string `json:"token"`
+}
+
 func (server *Server) userLogin(ctx *gin.Context) {
 	var req loginRequest
 	err := ctx.ShouldBindJSON(&req)
@@ -50,5 +55,11 @@ func (server *Server) userLogin(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, tokenString)
+
+	arg := &loginResponse{
+		UserID: user.ID,
+		Token: tokenString,
+	}
+	
+	ctx.JSON(http.StatusOK, arg)
 }

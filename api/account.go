@@ -11,13 +11,13 @@ import (
 )
 
 type createAccountRequest struct {
-	UserID      int32     `json:"user_id" binding:"required"`
-	CategoryID  int32     `json:"category_id" binding:"required"`
-	Title       string    `json:"title" binding:"required"`
-	Type        string    `json:"type" binding:"required"`
-	Description string    `json:"description" binding:"required"`
-	Value       int32     `json:"value" binding:"required"`
-	Date        time.Time `json:"date" binding:"required"`
+	UserID      int32     `form:"user_id" json:"user_id" binding:"required"`
+	CategoryID  int32     `form:"category_id" json:"category_id" binding:"required"`
+	Title       string    `form:"title" json:"title" binding:"required"`
+	Type        string    `form:"type" json:"type" binding:"required"`
+	Description string    `form:"description" json:"description" binding:"required"`
+	Value       int32     `form:"value" json:"value" binding:"required"`
+	Date        time.Time `form:"date" json:"date" binding:"required"`
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
@@ -26,7 +26,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 	var req createAccountRequest
-	err := ctx.ShouldBindJSON(&req)
+	err := ctx.ShouldBindQuery(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 	}

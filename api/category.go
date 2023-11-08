@@ -131,10 +131,10 @@ func (server *Server) updateCategory(ctx *gin.Context) {
 }
 
 type getCategoriesRequest struct {
-	UserID      int32  `json:"user_id" binding:"required"`
-	Title       string `json:"title" `
-	Type        string `json:"type" binding:"required"`
-	Description string `json:"description" `
+	UserID      int32  `form:"user_id" json:"user_id" binding:"required"`
+	Title       string `form:"title" json:"title" `
+	Type        string `form:"type" json:"type" binding:"required"`
+	Description string `form:"description" json:"description" `
 }
 
 func (server *Server) getCategories(ctx *gin.Context) {
@@ -143,7 +143,7 @@ func (server *Server) getCategories(ctx *gin.Context) {
 		return
 	}
 	var req getCategoriesRequest
-	err := ctx.ShouldBindJSON(&req)
+	err := ctx.ShouldBindQuery(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
