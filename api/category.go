@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	db "github.com/marcosavieira/go-finance/db/sqlc"
+	"github.com/marcosavieira/go-finance/db/util"
 )
 
 type createCategoryRequest struct {
@@ -16,6 +17,12 @@ type createCategoryRequest struct {
 }
 
 func (server *Server) createCategory(ctx *gin.Context) {
+
+	errorToken := util.VerifyBaererToken(ctx)
+	if errorToken != nil {
+		return
+	}
+
 	var req createCategoryRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -43,6 +50,11 @@ type getCategoryRequest struct {
 }
 
 func (server *Server) getCategory(ctx *gin.Context) {
+	errorToken := util.VerifyBaererToken(ctx)
+	if errorToken != nil {
+		return
+	}
+
 	var req getCategoryRequest
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
@@ -67,6 +79,10 @@ type deleteCategoryRequest struct {
 }
 
 func (server *Server) deleteCategory(ctx *gin.Context) {
+	errorToken := util.VerifyBaererToken(ctx)
+	if errorToken != nil {
+		return
+	}
 	var req deleteCategoryRequest
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
@@ -89,6 +105,10 @@ type updateCategoryRequest struct {
 }
 
 func (server *Server) updateCategory(ctx *gin.Context) {
+	errorToken := util.VerifyBaererToken(ctx)
+	if errorToken != nil {
+		return
+	}
 	var req updateCategoryRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -118,6 +138,10 @@ type getCategoriesRequest struct {
 }
 
 func (server *Server) getCategories(ctx *gin.Context) {
+	errorToken := util.VerifyBaererToken(ctx)
+	if errorToken != nil {
+		return
+	}
 	var req getCategoriesRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
