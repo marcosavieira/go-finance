@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/marcosavieira/go-finance/api/security"
+	"github.com/marcosavieira/go-finance/db/util"
 )
 
 type loginRequest struct {
@@ -37,7 +37,7 @@ func (server *Server) userLogin(ctx *gin.Context) {
 		return
 	}
 
-	err = security.VerificarSenha(user.Password, req.Password)
+	err = util.VerificarSenha(user.Password, req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
 		return
