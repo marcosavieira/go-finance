@@ -16,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:14
         env:
           POSTGRES_USER: root
-          POSTGRES_PASSWORD: secret
-          POSTGRES_DB: go_finance
+          POSTGRES_PASSWORD: XWCqqbjbDUoLsgUNdSSfNU4ZlZCmvS4K
+          POSTGRES_DB: root_li8f
         ports:
           - 5432:5432  
         options: >-
