@@ -1,14 +1,21 @@
-# Primeiro Estágio: Construir a Aplicação
-FROM golang:latest AS builder
-WORKDIR /
+#Build stage
+FROM golang:1.21.4-alpine3.18 AS builder
+WORKDIR /app
 COPY . .
-# Compilar a aplicação para um binário estático
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o myapp
+RUN go build -o main main.go
+RUN apk add curl
+RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.16.2/migrate.linux-amd64.tar.gz | tar xvz
 
+#Run stage
+FROM alpine:3.18
+WORKDIR /app
+COPY --from=builder /app/main .
+COPY --from=builder /app/migrate ./migrate
+COPY app.env .
+COPY start.sh .
+COPY wait-for.sh .
+COPY db/migration ./migration
 
-# Segundo Estágio: Criar uma Imagem Mínima
-FROM scratch
-# Copiar o binário compilado do primeiro estágio
-COPY --from=builder /app/myapp /myapp
-# Definir o ponto de entrada para o binário
-ENTRYPOINT [ "./myapp" ]
+EXPOSE 8080
+CMD [ "/app/main" ]
+ENTRYPOINT [ "/app/start.sh" ]
