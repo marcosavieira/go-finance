@@ -21,4 +21,5 @@ COPY db/migration ./migration
 
 EXPOSE 8080
 CMD [ "/app/main" ]
-ENTRYPOINT [ "/app/start.sh" ]
+ENTRYPOINT ["/bin/sh", "/app/start.sh" ]
+ENTRYPOINT ["/bin/bash", "/app/start.sh" ]
