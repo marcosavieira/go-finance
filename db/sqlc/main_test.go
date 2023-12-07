@@ -11,7 +11,7 @@ import (
 
 const (
 	dbDriver  = "postgres"
-	dbSourced = "postgresql://root:secret@localhost:5432/go_finance?sslmode=disable"
+	dbSourced = "postgres://gofinance_jahg_user:3CeZinb4jALqtQBbft9s4xWW8u9v6u08@dpg-clp0rgpoh6hc73bqf110-a/gofinance_jahg"
 )
 
 var testQueries *Queries
