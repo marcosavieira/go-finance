@@ -11,7 +11,7 @@ import (
 
 const (
 	dbDriver  = "postgres"
-	dbSourced = "postgres://gofinance_jahg_user:3CeZinb4jALqtQBbft9s4xWW8u9v6u08@dpg-clp0rgpoh6hc73bqf110-a/gofinance_jahg"
+	dbSourced = "postgres://root:XWCqqbjbDUoLsgUNdSSfNU4ZlZCmvS4K@dpg-clp1251oh6hc73bqk3d0-a.oregon-postgres.render.com/root_li8f"
 )
 
 var testQueries *Queries

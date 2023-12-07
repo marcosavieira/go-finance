@@ -13,7 +13,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_SOURCE=postgresql://root:secret@localhost:5432/go_finance?sslmode=disable
+      - DB_SOURCE=postgres://root:XWCqqbjbDUoLsgUNdSSfNU4ZlZCmvS4K@dpg-clp1251oh6hc73bqk3d0-a.oregon-postgres.render.com/root_li8f
     depends_on:
       - postgres
     entrypoint: [ "/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh" ]

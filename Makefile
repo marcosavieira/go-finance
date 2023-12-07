@@ -8,10 +8,10 @@ dropdb:
 	docker exec -it postgres14 dropdb go_finance	
 
 migrateup:
-	migrate -path db/migration -database "postgres://gofinance_jahg_user:3CeZinb4jALqtQBbft9s4xWW8u9v6u08@dpg-clp0rgpoh6hc73bqf110-a/gofinance_jahg" -verbose up
+	migrate -path db/migration -database "postgres://root:XWCqqbjbDUoLsgUNdSSfNU4ZlZCmvS4K@dpg-clp1251oh6hc73bqk3d0-a.oregon-postgres.render.com/root_li8f" -verbose up
 
 migrationdrop:
-	migrate -path db/migration -database "postgres://gofinance_jahg_user:3CeZinb4jALqtQBbft9s4xWW8u9v6u08@dpg-clp0rgpoh6hc73bqf110-a/gofinance_jahg" -verbose down
+	migrate -path db/migration -database "postgres://root:XWCqqbjbDUoLsgUNdSSfNU4ZlZCmvS4K@dpg-clp1251oh6hc73bqk3d0-a.oregon-postgres.render.com/root_li8f" -verbose down
 
 sqlc:
 	sqlc generate
