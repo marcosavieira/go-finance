@@ -16,5 +16,5 @@ services:
       - DB_SOURCE=postgres://root:XWCqqbjbDUoLsgUNdSSfNU4ZlZCmvS4K@dpg-clp1251oh6hc73bqk3d0-a.oregon-postgres.render.com/root_li8f
     depends_on:
       - postgres
-    entrypoint: [ "/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh" ]
+    entrypoint: [ "/bin/bash", "/bin/sh", "/app/wait-for.sh", "--", "/app/start.sh" ]
     command: [ "/app/main" ]    
