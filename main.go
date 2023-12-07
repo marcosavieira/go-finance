@@ -18,7 +18,7 @@ func main() {
 	}
 
 	dbDriver := os.Getenv("DB_DRIVER")
-	dbSourced := os.Getenv("DB_SOURCED")
+	dbSourced := os.Getenv("DB_SOURCE")
 	serverAddress := os.Getenv("SERVER_ADDRESS")
 
 	conn, err := sql.Open(dbDriver, dbSourced)
