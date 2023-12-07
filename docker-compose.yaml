@@ -4,8 +4,8 @@ services:
     image: postgres:14-alpine
     environment:
       - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=XWCqqbjbDUoLsgUNdSSfNU4ZlZCmvS4K
-      - POSTGRES_DB=root_li8f
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=postgres14
   api:
     build:
       context: .
